@@ -1,0 +1,13 @@
+{
+  "name": "StinkyBot",
+  "version": "0.0.1",
+  "description": "Discord bot for the StinkyBoys Discord server.",
+  "main": "bot.js",
+  "author": "Matthew Beaudin",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "discord.js": "^12.1.1",
+    "request": "^2.88.2"
+  }
+}
