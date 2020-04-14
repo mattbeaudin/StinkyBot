@@ -1,23 +1,18 @@
 const Discord = require('discord.js');
 const request = require('request');
+require('dotenv').config();
+
 const bot = new Discord.Client();
 
-const TOKEN = 'Njk5NTMxNjAyMjYyMzYwMTIz.XpVwjQ.4vNMeSJ20N7NbOLkki-ica3bjWc';
-const FACEIT_TOKEN = '420eff92-9e3d-4a3e-aa04-2e22f84e3fa7';
 const HUB_ID = '5ffaeb7f-dd7f-4141-bd65-1d0ae77caaa1';
 const PREFIX = '!';
-
-var auth = {
-    'Authorization' : 'Bearer ' + FACEIT_TOKEN,
-    'Accept' : 'json'
-};
 
 var options = {
     'method': 'GET',
     'url': 'https://open.faceit.com/data/v4/hubs/' + HUB_ID + '/stats',
     'headers': {
       'Accept': 'json',
-      'Authorization': 'Bearer ' + FACEIT_TOKEN
+      'Authorization': 'Bearer ' + process.env.FACEIT_TOKEN
     }
   };
 
@@ -26,6 +21,9 @@ bot.on('ready', () => {
 });
 
 bot.on('message', message => {
+    if (message.author.username === 'StinkyBot')
+        return;
+
     let args = message.content.substring(PREFIX.length).split(' ');
 
     // Process command
@@ -62,12 +60,15 @@ bot.on('message', message => {
                 });
 
                 if (!found) {
-                    message.channel.send("Can't find player " + args[1] + ". They must not be very stinky.");
+                    message.channel.send("Can't find player " + args[1] + ". They must not be very stinky.\n"
+                                        + "This bot can only be used with people on the Stinky Boys FaceIt Hub.");
                 }
             });
 
             break;
     }
+
+    console.log('User ' + message.author.username + ', issued command: !' + args[0]);
 });
 
-bot.login(TOKEN);
+bot.login(process.env.DISCORD_TOKEN);
