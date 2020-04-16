@@ -54,7 +54,8 @@ bot.on('message', message => {
                     let stats = 'Kills: ' + e.stats.Kills +
                             '\nDeaths: ' + e.stats.Deaths +
                             '\nMVPs: ' + e.stats.MVPs +
-                            '\nAverage K/D: ' + e.stats['Average K/D Ratio'];
+                            '\nAverage K/D: ' + e.stats['Average K/D Ratio'] + 
+                            '\nAverage HS%: ' + e.stats['Average Headshots %'];
                     message.channel.send("Here's the stats of " + e.nickname + ":");
                     message.channel.send(stats);
                 });
