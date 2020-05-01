@@ -14,7 +14,7 @@ var options = {
       'Accept': 'json',
       'Authorization': 'Bearer ' + process.env.FACEIT_TOKEN
     }
-  };
+};
 
 bot.on('ready', () => {
     console.log('Online');
@@ -29,9 +29,67 @@ bot.on('message', message => {
     // Process command
     switch (args[0]) {
         case 'stinky':
-            message.channel.send("Hello, my name is StinkyBot. Tell @boebie I wanna fuckin die.");
-            message.channel.send("Available commands:\n!stats <username>");
-            message.channel.send('https://www.youtube.com/watch?v=FveF-we6lcE');
+            message.channel.send("Hello, my name is StinkyBot. Tell @boebie I wanna fuckin die.\n" +
+                                "Available commands:\n!stats <username>\n" +
+                                "https://www.youtube.com/watch?v=FveF-we6lcE");
+            break;
+        case 'stinkiest':
+            let filter = args[1];
+            let apiProp = 'Wins';
+            
+            if (filter === 'deaths') {
+                apiProp = 'Deaths';
+            } else if (filter === 'kills') {
+                apiProp = 'Kills';
+            } else if (filter === 'headshots') {
+                apiProp = 'Headshots';
+            } else if (filter === 'aces') {
+                apiProp = 'Penta Kills';
+            }
+
+            request(options, (error, response) => {
+                if (error) {
+                    console.error('Error looking up stats');
+                    return;
+                }
+
+                let data = JSON.parse(response.body);
+                // Top player
+                let topStink, secondStink = null;
+
+                data.players.forEach((e, i) => {
+                    if (!topStink) {
+                        topStink = e;
+                        return;
+                    }
+
+                    if (!secondStink) {
+                        if (parseFloat(e.stats[apiProp]) < parseFloat(topStink.stats[apiProp])) {
+                            secondStink = e;
+                        }
+                    }
+
+                    if (parseFloat(e.stats[apiProp]) > parseFloat(topStink.stats[apiProp])) {
+                        secondStink = topStink;
+                        topStink = e;
+                        return;
+                    }
+
+                    if (secondStink && parseFloat(e.stats[apiProp]) > parseFloat(secondStink.stats[apiProp])) {
+                        secondStink = e;
+                    }
+                });
+
+                message.channel.send(topStink.nickname + ' has the most ' + apiProp + ' at: ' + topStink.stats[apiProp]);
+
+                if (parseFloat(secondStink.stats[apiProp]) == 0) {
+                    message.channel.send('Nobody else has ' + apiProp + ". That's not very stinky.");
+                    return;
+                }
+
+                message.channel.send(secondStink.nickname + ' has the second most ' + apiProp + ' at: ' + secondStink.stats[apiProp]);
+            });
+
             break;
         case 'stats':
             if (!args[1])
@@ -39,7 +97,7 @@ bot.on('message', message => {
             
             request(options, (error, response) => {
                 if (error) {
-                    console.log("whoops");
+                    console.error('Error looking up stats');
                     return;
                 }
                 
